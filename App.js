@@ -22,44 +22,31 @@ LogBox.ignoreAllLogs();
  * TODO:
  */
 
-const StackRL = createStackNavigator();
 const StackMain = createStackNavigator();
 
 export default function App() {
 
-  const [initializing, setInitializing] = useState(true)
   const [value, setValue] = useState();
-
-  function onAuthStateChanged(user) {
-    setValue(user);
-    if (initializing) setInitializing(false);
-  }
-
-  useEffect(() => {
-    let mounted = true;
-    if (mounted) {
-      const subscriber = fb.auth().onAuthStateChanged(onAuthStateChanged);
-    }
-    return () => {
-      subscriber,
-        mounted = false;
-    }
-  }, []);
+  const [loading, setLoading] = useState(true)
 
   const [fontsLoaded] = useFonts({
     'ProductSansRegular': require('./assets/fonts/Product-Sans-Regular.ttf'),
     'ProductSansBold': require('./assets/fonts/Product-Sans-Bold.ttf')
   });
 
-  if (initializing && !fontsLoaded) return <AppLoading />;
+  useEffect(() => {
+    fb.auth().onAuthStateChanged(user => {
+      if (user) {
+        setLoading(false);
+        setValue(true);
+      } else {
+        setLoading(false);
+        setValue(false);
+      }
+    });
+  }, [value, loading]);
 
-  // fb.auth().onAuthStateChanged(user => {
-  //   if (user) {
-  //     setValue(true);
-  //   } else {
-  //     setValue(false);
-  //   }
-  // })
+  if (!fontsLoaded) return <AppLoading />;
 
   const registerOptions = {
     headerShown: false
@@ -79,77 +66,71 @@ export default function App() {
 
     return (
       <StackMain.Navigator>
-        <StackMain.Screen
-          name="Search"
-          component={Search}
-          options={({ navigation }) => ({
-            headerLeft: () => <LogoHeader />,
-            title: '',
-            headerStyle: {
-              backgroundColor: '#0c0f12',
-              elevation: 0,
-              shadowOpacity: 0,
-            },
-            headerRight: () => <ProfilePhoto navigation={navigation} />
-          })}
-        />
-        <StackMain.Screen
-          name="Profile"
-          component={Profile}
-          options={({ route }) => ({
-            title: route.params.name,
-            headerStyle: {
-              backgroundColor: '#0c0f12',
-              elevation: 0,
-              shadowOpacity: 0,
-            },
-            headerTitleStyle: {
-              fontFamily: 'ProductSansBold',
-              padding: 5,
-              borderRadius: 2,
-              color: '#dfdfdf'
-            },
-            headerTintColor: '#fdfdfd'
-          })}
-        />
-        <StackMain.Screen
-          name="Recipes"
-          component={Recipe}
-          options={{
-            title: '',
-            headerTintColor: '#dfdfdf',
-            headerTransparent: true,
-          }}
-        />
+        {value && !loading ? (<>
+          <StackMain.Screen
+            name="Search"
+            component={Search}
+            options={({ navigation }) => ({
+              headerLeft: () => <LogoHeader />,
+              title: '',
+              headerStyle: {
+                backgroundColor: '#0c0f12',
+                elevation: 0,
+                shadowOpacity: 0,
+              },
+              headerRight: () => <ProfilePhoto navigation={navigation} />
+            })}
+          />
+          <StackMain.Screen
+            name="Profile"
+            component={Profile}
+            options={({ route }) => ({
+              title: route.params.name,
+              headerStyle: {
+                backgroundColor: '#0c0f12',
+                elevation: 0,
+                shadowOpacity: 0,
+              },
+              headerTitleStyle: {
+                fontFamily: 'ProductSansBold',
+                padding: 5,
+                borderRadius: 2,
+                color: '#dfdfdf'
+              },
+              headerTintColor: '#fdfdfd'
+            })}
+          />
+          <StackMain.Screen
+            name="Recipes"
+            component={Recipe}
+            options={{
+              title: '',
+              headerTintColor: '#dfdfdf',
+              headerTransparent: true,
+            }}
+          />
+        </>
+        ) : (
+          <>
+            <StackMain.Screen
+              name="Register"
+              component={Register}
+              options={registerOptions}
+            />
+            <StackMain.Screen
+              name="Login"
+              component={Login}
+              options={loginOptions}
+            />
+          </>
+        )}
       </StackMain.Navigator>
-    );
-  }
-
-  const RL = () => {
-    return (
-      <StackRL.Navigator>
-        <StackRL.Screen
-          name="Register"
-          component={Register}
-          options={registerOptions}
-        />
-        <StackRL.Screen
-          name="Login"
-          component={Login}
-          options={loginOptions}
-        />
-      </StackRL.Navigator>
     );
   }
 
   return (
     <NavigationContainer>
-      {
-        value && <Main />
-      }
-      {
-        !value && <RL />
-      }
+      <Main />
     </NavigationContainer>
   );
 }
