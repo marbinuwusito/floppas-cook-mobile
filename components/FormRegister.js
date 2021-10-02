@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { AntDesign, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import fb from "../firebase/firebase";
+import firebaseApp from "../firebase/firebase";
 
 export const FormRegister = ({ navigation }) => {
   const [hidden, setHidden] = useState(false);
@@ -21,7 +21,7 @@ export const FormRegister = ({ navigation }) => {
   const profilephoto = {
     id: 3,
     url:
-      "https://scontent.fsal3-1.fna.fbcdn.net/v/t1.6435-9/238069441_393359272135064_6990132240935304837_n.png?_nc_cat=110&ccb=1-5&_nc_sid=730e14&_nc_ohc=0chJuFVXQYIAX-1WrTW&_nc_ht=scontent.fsal3-1.fna&oh=9c5b5e7b16c63b5593d6b62cb555cc43&oe=613F4032",
+      "https://scontent.fsal3-1.fna.fbcdn.net/v/t1.6435-9/238069441_393359272135064_6990132240935304837_n.png?_nc_cat=110&ccb=1-5&_nc_sid=730e14&_nc_ohc=i3kYPeiyjJIAX_PAI3b&_nc_ht=scontent.fsal3-1.fna&oh=02f288564f28233d5457709361f1a5a9&oe=6166CD32",
   };
 
   const [userData, setUserData] = useState(initialState);
@@ -41,12 +41,12 @@ export const FormRegister = ({ navigation }) => {
       setErrorMessage("Fill the Email, User name or Password field");
     } else {
       try {
-        await fb.auth().createUserWithEmailAndPassword(
+        await firebaseApp.auth().createUserWithEmailAndPassword(
           userData.email,
           userData.password,
         );
-        const user = fb.auth().currentUser;
-        await fb.firestore().collection("users").doc(user.uid).set({
+        const user = firebaseApp.auth().currentUser;
+        await firebaseApp.firestore().collection("users").doc(user.uid).set({
           userName: userData.userName,
           profilephoto: profilephoto,
           favorites: [],

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
     header: {
         justifyContent: 'center',
         alignItems: 'center',
-        paddingTop: 50
+        paddingTop: 80
     }
 });
 

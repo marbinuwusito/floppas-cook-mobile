@@ -25,7 +25,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/img/LOGO-FLOPPAS-GREEN.png",
+        "foregroundImage": "./assets/img/ICON.png",
         "backgroundColor": "#0c0f12"
       }
     },
